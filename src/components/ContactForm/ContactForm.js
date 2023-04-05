@@ -1,6 +1,8 @@
-import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
+import { getContacts } from '../../redux/selectors';
+import { addContact } from 'redux/contactsSlice';
+
 import { Formik } from 'formik';
-import { nanoid } from 'nanoid';
 import {
   InputContainer,
   Button,
@@ -9,16 +11,35 @@ import {
   Form,
 } from './ContactForm.styled';
 
-export const ContactForm = ({ onSubmit }) => {
+export const ContactForm = () => {
   const handleSubmit = (values, actions) => {
     const contact = {
-      id: nanoid(6),
-      ...values,
+      name: values.name,
+      number: values.number,
     };
-    onSubmit(contact);
+    
+if (
+      contacts.some(item => {
+        return item.name === contact.name;
+      })
+    ) {
+      alert('Contact with this name already exist!');
+      return;
+    }
+    if (
+      contacts.some(item => {
+        return item.number === contact.number;
+      })
+    ) {
+      alert('This number is already in base!');
+      return;
+    }
+dispatch(addContact(contact.name, contact.number));
     actions.resetForm();
   };
 
+  const contacts = useSelector(getContacts);
+  const dispatch = useDispatch();
   return (
     <Formik initialValues={{ name: '', number: '' }} onSubmit={handleSubmit}>
       {props => {
@@ -61,8 +82,4 @@ export const ContactForm = ({ onSubmit }) => {
       }}
     </Formik>
   );
-};
-
-ContactForm.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
 };

@@ -1,27 +1,35 @@
-import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 import { ContactItem } from '../ContactItem/ContactItem';
-import  { Table} from './ContactList.styled';
+import { Table} from './ContactList.styled';
+import { getContacts, getFilter } from 'redux/selectors';
 
-export const ContactList = ({ contacts, onDelete}) => {
+export const ContactList = () => {
+ 
+  const contacts = useSelector(getContacts);
+  const filter = useSelector(getFilter);
+
+  const handlerFilter = () => {
+    return contacts
+      .filter(contact => {
+        return (
+          contact.name
+            .toLowerCase()
+            .includes(filter.toLowerCase().trim()) ||
+          contact.number.includes(filter.trim())
+        );
+      })
+      .sort((firstContact, secondContact) =>
+        firstContact.name.localeCompare(secondContact.name)
+      );
+  }
   return (
     <Table>
       <tbody>
         <ContactItem
-          contacts={contacts}
-          onDelete={onDelete}
+          contacts={handlerFilter()}
         />
       </tbody>
     </Table>
   );
 };
 
-ContactList.propTypes = {
-  contacts: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string.isRequired,
-      number: PropTypes.string.isRequired,
-      id: PropTypes.string.isRequired,
-    })
-  ),
-  onDelete: PropTypes.func.isRequired,
-};
