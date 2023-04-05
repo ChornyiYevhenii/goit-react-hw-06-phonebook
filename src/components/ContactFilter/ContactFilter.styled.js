@@ -11,3 +11,4 @@ export const FilterInput = styled.input`
     outline: 1px solid #6b25d6;
   }
 `;
+
